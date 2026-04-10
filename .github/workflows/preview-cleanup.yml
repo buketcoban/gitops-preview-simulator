@@ -1,0 +1,16 @@
+name: Preview Cleanup
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  cleanup-event:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print cleanup intent
+        run: |
+          echo "PR closed. Preview cleanup should be triggered."
+          echo "Branch: ${{ github.event.pull_request.head.ref }}"
+          echo "Merged: ${{ github.event.pull_request.merged }}"

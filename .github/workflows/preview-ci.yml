@@ -1,0 +1,51 @@
+name: Preview CI
+
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Show branch info
+        run: |
+          echo "GitHub ref: $GITHUB_REF"
+          echo "GitHub sha: $GITHUB_SHA"
+
+      - name: Build Docker image
+        run: |
+          cd app
+          docker build -t preview-demo:${GITHUB_SHA::7} .
+
+      - name: Create preview metadata artifact
+        run: |
+          mkdir -p artifacts
+          cat > artifacts/preview-metadata.json <<JSON
+          {
+            "ref": "${GITHUB_REF}",
+            "sha": "${GITHUB_SHA}",
+            "workflow": "preview-ci",
+            "generated_at": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          }
+          JSON
+
+      - name: Upload metadata artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-metadata
+          path: artifacts/preview-metadata.json
