@@ -29,6 +29,11 @@ The project is designed to run **locally**, using:
 
 ---
 
+## Architecture Diagram
+![alt text](diagram.png)
+
+---
+
 ## Architecture
 
 ### Core Components
